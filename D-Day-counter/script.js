@@ -1,5 +1,6 @@
 const messageContainer = document.querySelector("#d-day-message");
 const container = document.querySelector("#d-day-container");
+const savedDate = localStorage.getItem("saved-date");
 const intervalIdArr = [];
 
 container.style.display = "none";
@@ -15,9 +16,9 @@ const dateFormMaker = function () {
   return dateFormat;
 };
 
-const counterMaker = function () {
+const counterMaker = function (targetDateInput) {
   const nowDate = new Date();
-  const targetDate = new Date(dateFormMaker()).setHours(0, 0, 0, 0);
+  const targetDate = new Date(targetDateInput).setHours(0, 0, 0, 0);
   const remaining = (targetDate - nowDate) / 1000; //ms
   // 만약, remaining이 0이라면, 타이머가 종료 되었습니다. 출력
   if (remaining <= 0) {
@@ -47,9 +48,16 @@ const counterMaker = function () {
   const documentArr = ["day", "hour", "min", "sec"];
   const timeKeys = Object.keys(remainingObj);
 
+  const format = function (time) {
+    if (time < 10) {
+      return "0" + time;
+    } else return time;
+  };
+
   let i = 0;
   for (let tag of documentArr) {
-    document.getElementById(tag).textContent = remainingObj[timeKeys[i]];
+    const remainingTime = format(remainingObj[timeKeys[i]]);
+    document.getElementById(tag).textContent = remainingTime;
     i++;
   }
 
@@ -75,8 +83,12 @@ const counterMaker = function () {
 const starter = function () {
   container.style.display = "flex";
   messageContainer.style.display = "none";
-  counterMaker();
-  const intervalId = setInterval(counterMaker, 1000);
+
+  setClearInterval();
+  const targetDateInput = dateFormMaker();
+  localStorage.setItem("saved-date", targetDateInput);
+  counterMaker(targetDateInput);
+  const intervalId = setInterval(() => counterMaker(targetDateInput), 1000);
   intervalIdArr.push(intervalId);
   // for (let i = 0; i < 100; i++) {
   //   setTimeout(() => {
@@ -89,7 +101,17 @@ const setClearInterval = function () {
   for (let i of intervalIdArr) {
     clearInterval(i);
   }
+};
+
+const resetTimer = function () {
   container.style.display = "none";
   messageContainer.style.display = "flex";
   messageContainer.innerHTML = "<h3>D-Day를 입력해 주세요.<h3>";
+  setClearInterval();
 };
+
+if (savedDate) {
+  starter();
+} else {
+  console.log("data is null");
+}
