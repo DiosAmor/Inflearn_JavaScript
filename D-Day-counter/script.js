@@ -16,9 +16,12 @@ const dateFormMaker = function () {
   return dateFormat;
 };
 
-const counterMaker = function (targetDateInput) {
+const counterMaker = function (data) {
+  if (data !== savedDate) {
+    localStorage.setItem("saved-date", data);
+  }
   const nowDate = new Date();
-  const targetDate = new Date(targetDateInput).setHours(0, 0, 0, 0);
+  const targetDate = new Date(data).setHours(0, 0, 0, 0);
   const remaining = (targetDate - nowDate) / 1000; //ms
   // 만약, remaining이 0이라면, 타이머가 종료 되었습니다. 출력
   if (remaining <= 0) {
@@ -80,13 +83,14 @@ const counterMaker = function (targetDateInput) {
   // }
 };
 
-const starter = function () {
+const starter = function (targetDateInput) {
   container.style.display = "flex";
   messageContainer.style.display = "none";
 
   setClearInterval();
-  const targetDateInput = dateFormMaker();
-  localStorage.setItem("saved-date", targetDateInput);
+  if (!targetDateInput) {
+    targetDateInput = dateFormMaker();
+  }
   counterMaker(targetDateInput);
   const intervalId = setInterval(() => counterMaker(targetDateInput), 1000);
   intervalIdArr.push(intervalId);
@@ -98,6 +102,7 @@ const starter = function () {
 };
 
 const setClearInterval = function () {
+  localStorage.removeItem("saved-date");
   for (let i of intervalIdArr) {
     clearInterval(i);
   }
@@ -111,7 +116,9 @@ const resetTimer = function () {
 };
 
 if (savedDate) {
-  starter();
+  starter(savedDate);
 } else {
+  container.style.display = "none";
+  messageContainer.innerHTML = "<h3>D-Day를 입력해 주세요.<h3>";
   console.log("data is null");
 }
