@@ -1,0 +1,20 @@
+version: "3.7"
+
+# indent로 트리를 표시하므로 유의!
+
+# 컴퓨터들
+services:
+  my-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./index.js:/myfolder/index.js
+      - ./email.js:/myfolder/email.js
+    ports:
+      - 4000:4000
+
+  my-database:
+    image: mongo:5
+    ports:
+      - 27017:27017
