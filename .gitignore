@@ -2,3 +2,4 @@ dist
 node_modules
 ToDo-list/apikey.js
 .env
+.env.docker
