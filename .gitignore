@@ -1,5 +1,6 @@
 dist
 node_modules
 ToDo-list/apikey.js
+gcp-file-storage.json
 .env
 .env.docker
