@@ -1,5 +1,5 @@
 import {on, qs} from "../helpers.js";
-import View from "./View";
+import View from "./View.js";
 
 const tag = "[SearchFormView]";
 
@@ -7,7 +7,7 @@ export default class SearchFormView extends View {
   constructor() {
     console.log(tag, "constructor");
 
-    super(qs("search-form-view"));
+    super(qs("#search-form-view"));
 
     this.inputElement = qs("[type=text]", this.element);
     this.resetElement = qs("[type=reset]", this.element);
@@ -24,8 +24,8 @@ export default class SearchFormView extends View {
 
   bindEvents() {
     on(this.inputElement, "keyup", () => this.handleKeyup());
-    on(this.element, "submit", event => this.handleSubmit(event));
-    on(this.resetElement, "click", () => this.handleReset());
+    this.on("submit", event => this.handleSubmit(event));
+    this.on("reset", () => this.handleReset());
   }
 
   handleKeyup() {
