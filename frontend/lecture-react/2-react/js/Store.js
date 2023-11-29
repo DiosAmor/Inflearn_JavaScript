@@ -13,8 +13,8 @@ class Store {
   }
 
   search(keyword) {
-    return this.storage.productData.filter(product => product.name.includes(keyword));
     this.addHistory(keyword);
+    return this.storage.productData.filter(product => product.name.includes(keyword));
   }
 
   getKeywordList() {
@@ -33,7 +33,7 @@ class Store {
     this.storage.historyData = this.storage.historyData.filter(history => history.keyword !== keyword);
   }
 
-  addHistory(keyword) {
+  addHistory(keyword = "") {
     keyword = keyword.trim();
     if (!keyword) 
       return;
