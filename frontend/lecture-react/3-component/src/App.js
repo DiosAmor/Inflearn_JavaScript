@@ -1,13 +1,21 @@
 import React from "react";
 import Header from "./components/Header.js";
 import SearchForm from "./components/SearchForm.js";
+import SearchResult from "./components/SearchResult.js";
+import store from "./Store.js";
+import Tabs, {TabType} from "./components/Tabs.js";
+import KeywordList from "./components/KeywordList.js";
+import HistoryList from "./components/HistoryList.js";
 
 export default class App extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      searchKeyword: ""
+      searchKeyword: "",
+      searchResult: [],
+      submitted: false,
+      selectedTab: TabType.KEYWORD
     };
   }
 
@@ -18,17 +26,33 @@ export default class App extends React.Component {
     this.setState({searchKeyword});
   }
 
-  search(searchKeyword) {}
+  search(searchKeyword) {
+    const searchResult = store.search(searchKeyword);
+
+    this.setState({searchKeyword, searchResult, submitted: true});
+  }
 
   handleReset() {
-    this.setState({searchKeyword: ""});
+    this.setState({searchKeyword: "", submitted: false, searchResult: []});
   }
 
   render() {
+    const {searchKeyword, searchResult, submitted, selectedTab} = this.state;
     return (<div>
       <Header title="검색"/>;
       <div className="container">
-        <SearchForm value={this.state.searchKeyword} onChange={value => this.handleChangeInput(value)} onSubmit={searchKeyword => this.search(searchKeyword)} onReset={() => this.handleReset()}/>
+        <SearchForm value={searchKeyword} onChange={value => this.handleChangeInput(value)} onSubmit={searchKeyword => this.search(searchKeyword)} onReset={() => this.handleReset()}/>
+        <div className="content">
+          {
+            submitted
+              ? (<SearchResult data={searchResult}/>)
+              : (<div>
+                <Tabs selectedTab={selectedTab} onChange={selectedTab => this.setState({selectedTab})}/>{" "}
+                {selectedTab === TabType.KEYWORD && (<KeywordList onClick={keyword => this.search(keyword)}/>)}
+                {selectedTab === TabType.HISTORY && (<HistoryList onClick={keyword => this.search(keyword)}/>)}
+              </div>)
+          }
+        </div>
       </div>
     </div>);
   }
