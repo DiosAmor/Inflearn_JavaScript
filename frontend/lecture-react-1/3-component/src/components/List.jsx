@@ -1,5 +1,5 @@
 import React from "react";
-import {formatRelativeDate} from "../helpers";
+import {formatRelativeDate} from "../helpers.js";
 
 const List = ({
   data = [],

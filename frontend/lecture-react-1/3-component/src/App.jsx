@@ -1,11 +1,11 @@
 import React from "react";
-import Header from "./components/Header.js";
-import SearchForm from "./components/SearchForm.js";
-import SearchResult from "./components/SearchResult.js";
+import Header from "./components/Header.jsx";
+import SearchForm from "./components/SearchForm.jsx";
+import SearchResult from "./components/SearchResult.jsx";
 import store from "./Store.js";
-import Tabs, {TabType} from "./components/Tabs.js";
-import KeywordList from "./components/KeywordList.js";
-import HistoryList from "./components/HistoryList.js";
+import Tabs, {TabType} from "./components/Tabs.jsx";
+import KeywordList from "./components/KeywordList.jsx";
+import HistoryList from "./components/HistoryList.jsx";
 
 export default class App extends React.Component {
   constructor() {
