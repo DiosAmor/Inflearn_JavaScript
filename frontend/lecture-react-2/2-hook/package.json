@@ -2,7 +2,7 @@
   "name": "2-hook",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.js",
+  "main": "src/main.jsx",
   "scripts": {
     "start": "webpack serve --config ../shared/webpack.config.js"
   },
@@ -22,7 +22,8 @@
   "babel": {
     "presets": [
       [
-        "@babel/preset-react", {
+        "@babel/preset-react",
+        {
           "runtime": "automatic"
         }
       ]
