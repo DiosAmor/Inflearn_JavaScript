@@ -6,8 +6,10 @@ import Title from "../../components/Title";
 import OrderDeliveryCard from "./OrderDeliveryCard";
 import OrderPaymentCard from "./OrderPaymentCard";
 import OrderStatusCard from "./OrderStatusCard";
+import * as MyLayout from "../../lib/MyLayout";
+import ErrorDialog from "../../components/ErrorDialog";
 
-export default class OrderPAge extends React.Component {
+class OrderPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,12 +22,17 @@ export default class OrderPAge extends React.Component {
   }
 
   async fetch() {
+    const { startLoading, finishLoading, openDialog } = this.props;
+
+    startLoading("주문 정보 로딩중...");
     try {
       const order = await OrderApi.fetchMyOrder();
       this.setState({ order });
     } catch (e) {
-      console.error(e);
+      openDialog(<ErrorDialog />);
+      return;
     }
+    finishLoading();
   }
 
   render() {
@@ -45,3 +52,5 @@ export default class OrderPAge extends React.Component {
     );
   }
 }
+
+export default MyLayout.withLayout(OrderPage);

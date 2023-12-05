@@ -5,8 +5,13 @@ import Title from "../../components/Title";
 import OrderForm from "./OrderForm";
 import PaymentButton from "./PaymentButton";
 import ProductApi from "shared/api/ProductApi";
+import OrderApi from "shared/api/OrderApi";
+import * as MyRouter from "../../lib/MyRouter";
+import * as MyLayout from "../../lib/MyLayout";
+import ErrorDialog from "../../components/ErrorDialog";
+import PaymentSuccessDialog from "./PaymentSuccessDialog";
 
-export default class CartPage extends React.Component {
+class CartPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,16 +25,36 @@ export default class CartPage extends React.Component {
   }
 
   async fetch() {
+    const { params, startLoading, finishLoading, openDialog } = this.props;
+    const { productId } = params();
+    if (!productId) return;
+
+    startLoading("장바구니에 담는 중...");
+
     try {
-      const product = await ProductApi.fetchProduct("CACDA421");
+      const product = await ProductApi.fetchProduct(productId);
       this.setState({ product });
     } catch (e) {
-      console.error(e);
+      openDialog(<ErrorDialog />);
+      return;
     }
+
+    finishLoading();
   }
 
-  handleSubmit(values) {
-    console.log("here", values);
+  async handleSubmit(values) {
+    const { startLoading, finishLoading, openDialog } = this.props;
+
+    startLoading("결제중...");
+    try {
+      await OrderApi.createOrder(values);
+    } catch (e) {
+      openDialog(<ErrorDialog />);
+      return;
+    }
+    finishLoading();
+
+    openDialog(<PaymentSuccessDialog />);
   }
 
   render() {
@@ -47,3 +72,5 @@ export default class CartPage extends React.Component {
     );
   }
 }
+
+export default MyLayout.withLayout(MyRouter.withRouter(CartPage));

@@ -4,7 +4,8 @@ import Navbar from "../../components/Navbar";
 import Page from "../../components/Page";
 import Title from "../../components/Title";
 import OrderableProductItem from "./OrderableProductItem";
-import FormControl from "../../components/FormControl";
+import * as MyLayout from "../../lib/MyLayout";
+import ErrorDialog from "../../components/ErrorDialog";
 
 class ProductPage extends React.Component {
   constructor(props) {
@@ -19,12 +20,16 @@ class ProductPage extends React.Component {
   }
 
   async fetch() {
+    const { startLoading, finishLoading, openDialog } = this.props;
+    startLoading("메뉴 목록 로딩중");
     try {
       const productList = await ProductApi.fetchProductList();
       this.setState({ productList });
     } catch (e) {
-      console.error(e);
+      openDialog(<ErrorDialog />);
+      return;
     }
+    finishLoading();
   }
 
   render() {
@@ -44,4 +49,4 @@ class ProductPage extends React.Component {
   }
 }
 
-export default ProductPage;
+export default MyLayout.withLayout(ProductPage);
