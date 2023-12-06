@@ -1,6 +1,7 @@
 import React from "react";
 import FormControl from "../../components/FormControl";
-import * as MyForm from "../../lib/MyForm";
+//import * as MyForm from "../../lib/MyForm";
+import * as MyForm from "../../lib/MyForm-reducer";
 
 const OrderForm = ({ onSubmit }) => {
   const validate = (values) => {
