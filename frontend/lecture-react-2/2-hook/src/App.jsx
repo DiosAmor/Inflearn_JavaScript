@@ -1,3 +1,4 @@
+import React from "react";
 import * as MyRouter from "./lib/MyRouter";
 import * as MyLayout from "./lib/MyLayout";
 import CartPage from "./pages/CartPage";
