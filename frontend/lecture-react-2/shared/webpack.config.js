@@ -3,21 +3,21 @@ const path = require("path");
 module.exports = {
   mode: "development",
   entry: {
-    main: "./src/main.jsx"
+    main: "./src/main.js",
   },
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].bundle.js",
-    clean: true
+    clean: true,
   },
   resolve: {
-    extensions: [".js", ".jsx"]
+    extensions: [".js", ".jsx"],
   },
   devtool: "source-map",
   devServer: {
     static: path.resolve(__dirname, "public"),
     port: process.env.PORT,
-    historyApiFallback: true
+    historyApiFallback: true,
   },
   module: {
     rules: [
@@ -25,9 +25,9 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
-      }
-    ]
-  }
+          loader: "babel-loader",
+        },
+      },
+    ],
+  },
 };
