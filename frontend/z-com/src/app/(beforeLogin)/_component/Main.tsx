@@ -1,4 +1,9 @@
-export default function Home() {
+import styles from "@/app/(beforeLogin)/_component/main.module.css";
+import Image from "next/image";
+import zLogo from "../../../../public/zlogo.png";
+import Link from "next/link";
+
+export default function Main() {
   return (
     <>
       <div className={styles.left}>
