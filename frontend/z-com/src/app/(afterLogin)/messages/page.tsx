@@ -1,5 +1,18 @@
-import { ReactNode } from "react";
+import Room from "./_component/Room";
+import style from "./message.module.css";
 
-export default async function message() {
-  return <main>쪽지페이지</main>;
+export default function message() {
+  return (
+    <main className={style.main}>
+      <div className={style.header}>
+        <h3>쪽지</h3>
+      </div>
+      <Room />
+      <Room />
+      <Room />
+      <Room />
+      <Room />
+      <Room />
+    </main>
+  );
 }
