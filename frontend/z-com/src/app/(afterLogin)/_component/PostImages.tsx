@@ -26,7 +26,7 @@ export default function PostImages({ post }: Props) {
         className={cx(style.postImageSection, style.oneImage)}
         style={{
           backgroundImage: `url(${post.Images[0]?.link})`,
-          backgroundSize: "cover",
+          backgroundSize: "contain",
         }}
       >
         <img src={post.Images[0]?.link} alt="" />
