@@ -11,6 +11,7 @@ export const {
     signIn: "/i/flow/login",
     newUser: "/i/flow/signup",
   },
+
   providers: [
     // kakao, naver 등의 provider는 여기서 추가
     CredentialsProvider({
