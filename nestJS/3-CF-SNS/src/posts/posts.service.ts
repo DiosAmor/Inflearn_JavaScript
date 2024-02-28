@@ -12,25 +12,6 @@ export interface PostModel {
   commentCount: number;
 }
 
-let posts: PostModel[] = [
-  {
-    id: 1,
-    author: 'diosamor',
-    title: "Let's go",
-    content: 'Coooding~',
-    likeCount: 1000,
-    commentCount: 1000,
-  },
-  {
-    id: 2,
-    author: 'diosamor2',
-    title: "Let's go 2",
-    content: 'Coooding 2~',
-    likeCount: 1000,
-    commentCount: 1000,
-  },
-];
-
 @Injectable()
 export class PostsService {
   constructor(
@@ -38,12 +19,16 @@ export class PostsService {
     private readonly postsRepository: Repository<PostModel>,
   ) {}
 
-  getAllPosts() {
-    return posts;
+  async getAllPosts() {
+    return this.postsRepository.find();
   }
 
-  getPostById(id: number) {
-    const post = posts.find((post) => post.id === +id);
+  async getPostById(id: number) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id,
+      },
+    });
 
     if (!post) {
       throw new NotFoundException();
@@ -52,23 +37,26 @@ export class PostsService {
     return post;
   }
 
-  createPost(author: string, title: string, content: string) {
-    const post: PostModel = {
-      id: posts[posts.length - 1].id + 1,
+  async createPost(author: string, title: string, content: string) {
+    const post = this.postsRepository.create({
       author,
       title,
       content,
       likeCount: 0,
       commentCount: 0,
-    };
+    });
 
-    posts = [...posts, post];
+    const newPost = await this.postsRepository.save(post);
 
-    return post;
+    return newPost;
   }
 
-  updatePost(postId: number, author: string, title: string, content: string) {
-    const post = posts.find((post) => post.id === postId);
+  async updatePost(id: number, author: string, title: string, content: string) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id,
+      },
+    });
 
     if (!post) {
       throw new NotFoundException();
@@ -86,20 +74,24 @@ export class PostsService {
       post.content = content;
     }
 
-    // posts = posts.map((prevPost) => (prevPost.id === +id ? post : prevPost));
+    const newPost = await this.postsRepository.save(post);
 
-    return post;
+    return newPost;
   }
 
-  deletePost(postId: number) {
-    const post = posts.find((post) => post.id === postId);
+  async deletePost(id: number) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id,
+      },
+    });
 
     if (!post) {
       throw new NotFoundException();
     }
 
-    posts = posts.filter((post) => post.id !== postId);
+    await this.postsRepository.delete(id);
 
-    return postId;
+    return id;
   }
 }

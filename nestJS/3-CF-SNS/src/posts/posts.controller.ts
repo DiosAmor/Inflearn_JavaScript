@@ -16,13 +16,13 @@ export class PostsController {
   // 1) GET /posts
 
   @Get()
-  getPosts(): PostModel[] {
+  getPosts(): Promise<PostModel[]> {
     return this.postsService.getAllPosts();
   }
 
   // 2) GET /posts/:id
   @Get(':id')
-  getPost(@Param('id') id: string): PostModel {
+  getPost(@Param('id') id: string): Promise<PostModel> {
     return this.postsService.getPostById(+id);
   }
 
@@ -32,7 +32,7 @@ export class PostsController {
     @Body('author') author: string,
     @Body('title') title: string,
     @Body('content') content: string,
-  ): PostModel {
+  ): Promise<PostModel> {
     return this.postsService.createPost(author, title, content);
   }
 
@@ -43,13 +43,13 @@ export class PostsController {
     @Body('author') author?: string,
     @Body('title') title?: string,
     @Body('content') content?: string,
-  ): PostModel {
+  ): Promise<PostModel> {
     return this.postsService.updatePost(+id, author, title, content);
   }
 
   // 5) DELETE /posts/:id
   @Delete(':id')
-  deletePost(@Param('id') id: string): number {
+  deletePost(@Param('id') id: string): Promise<number> {
     return this.postsService.deletePost(+id);
   }
 }
