@@ -68,7 +68,7 @@ export class AppController {
       },
     });
 
-    // sum
+    // sum, average, minimum, maximum
     const sum = await this.userRepository.sum('count', {
       email: ILike('%0%'),
     });
