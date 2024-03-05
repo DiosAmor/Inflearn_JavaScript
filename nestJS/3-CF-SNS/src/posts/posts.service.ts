@@ -21,7 +21,9 @@ export class PostsService {
   ) {}
 
   async getAllPosts() {
-    return this.postsRepository.find();
+    return this.postsRepository.find({
+      relations: ['author'],
+    });
   }
 
   async getPostById(id: number) {
