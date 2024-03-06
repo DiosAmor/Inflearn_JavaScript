@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -22,8 +24,8 @@ export class PostsController {
 
   // 2) GET /posts/:id
   @Get(':id')
-  getPost(@Param('id') id: string): Promise<PostModel> {
-    return this.postsService.getPostById(+id);
+  getPost(@Param('id', ParseIntPipe) id: number): Promise<PostModel> {
+    return this.postsService.getPostById(id);
   }
 
   // 3) POST /posts
@@ -32,6 +34,7 @@ export class PostsController {
     @Body('authorId') authorId: number,
     @Body('title') title: string,
     @Body('content') content: string,
+    @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
   ) {
     return this.postsService.createPost(authorId, title, content);
   }
@@ -39,16 +42,16 @@ export class PostsController {
   // 4) PATCH /posts/:id
   @Patch(':id')
   patchPost(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body('title') title?: string,
     @Body('content') content?: string,
   ): Promise<PostModel> {
-    return this.postsService.updatePost(+id, title, content);
+    return this.postsService.updatePost(id, title, content);
   }
 
   // 5) DELETE /posts/:id
   @Delete(':id')
-  deletePost(@Param('id') id: string): Promise<number> {
-    return this.postsService.deletePost(+id);
+  deletePost(@Param('id', ParseIntPipe) id: number): Promise<number> {
+    return this.postsService.deletePost(id);
   }
 }
