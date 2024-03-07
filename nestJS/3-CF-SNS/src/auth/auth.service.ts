@@ -116,9 +116,15 @@ export class AuthService {
   }
 
   verifyToken(token: string) {
-    return this.jwtService.verify(token, {
-      secret: JWT_SECRET,
-    });
+    try {
+      return this.jwtService.verify(token, {
+        secret: JWT_SECRET,
+      });
+    } catch (e) {
+      throw new UnauthorizedException(
+        '토큰이 만료되었거나, 잘못된 토큰입니다!',
+      );
+    }
   }
 
   // 토큰 재발급
