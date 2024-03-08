@@ -7,13 +7,17 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { PostModel, PostsService } from './posts.service';
+import { PostsService } from './posts.service';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PaginatePostDto } from './dto/paginate-post.dto';
+import { PostsModel } from './entities/posts.entity';
+import { UsersModel } from 'src/users/entities/users.entity';
 
 @Controller('posts')
 export class PostsController {
@@ -22,13 +26,21 @@ export class PostsController {
   // 1) GET /posts
 
   @Get()
-  getPosts(): Promise<PostModel[]> {
-    return this.postsService.getAllPosts();
+  getPosts(@Query() query: PaginatePostDto) {
+    return this.postsService.paginatePosts(query);
+  }
+
+  @Post('random')
+  @UseGuards(AccessTokenGuard)
+  async postPostRandom(@User() user: UsersModel): Promise<boolean> {
+    await this.postsService.generatePosts(user.id);
+
+    return true;
   }
 
   // 2) GET /posts/:id
   @Get(':id')
-  getPost(@Param('id', ParseIntPipe) id: number): Promise<PostModel> {
+  getPost(@Param('id', ParseIntPipe) id: number): Promise<PostsModel> {
     return this.postsService.getPostById(id);
   }
 
@@ -55,7 +67,7 @@ export class PostsController {
     @Body() body: UpdatePostDto,
     // @Body('title') title?: string,
     // @Body('content') content?: string,
-  ): Promise<PostModel> {
+  ): Promise<PostsModel> {
     return this.postsService.updatePost(id, body);
   }
 
