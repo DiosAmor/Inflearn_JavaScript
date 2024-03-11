@@ -3,14 +3,13 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Query,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
@@ -20,11 +19,17 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { PostsModel } from './entities/posts.entity';
 import { UsersModel } from 'src/users/entities/users.entity';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageModelType } from 'src/common/entity/image.entity';
+import { DataSource } from 'typeorm';
+import { PostsImagesService } from './image/images.service';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly postsImagesService: PostsImagesService,
+    private readonly dataSource: DataSource,
+  ) {}
 
   // 1) GET /posts
 
@@ -50,11 +55,9 @@ export class PostsController {
   // 3) POST /posts
   @Post()
   @UseGuards(AccessTokenGuard)
-  @UseInterceptors(FileInterceptor('image'))
-  postPosts(
+  async postPosts(
     @User('id') authorId: number,
     @Body() body: CreatePostDto,
-    @UploadedFile() file?: Express.Multer.File,
     // @Body('authorId') authorId: number,
     // @Body('title') title: string,
     // @Body('content') content: string,
@@ -62,7 +65,38 @@ export class PostsController {
   ) {
     // const authorId = req.user.id;
 
-    return this.postsService.createPost(authorId, body, file?.filename);
+    // Transaction과 관련된 모든 쿼리를 담당함
+    // 쿼리 러너를 생성
+    const qr = this.dataSource.createQueryRunner();
+
+    // 쿼리 러너에 연결
+    await qr.connect();
+
+    await qr.startTransaction();
+
+    // 로직 실행
+    try {
+      const post = await this.postsService.createPost(authorId, body, qr);
+
+      for (let i = 0; i < body.images.length; i++) {
+        await this.postsImagesService.createPostImage(
+          {
+            post,
+            order: i,
+            path: body.images[i],
+            type: ImageModelType.POST_IMAGE,
+          },
+          qr,
+        );
+      }
+      await qr.commitTransaction();
+
+      return this.postsService.getPostById(post.id);
+    } catch (e) {
+      await qr.rollbackTransaction();
+      await qr.release();
+      throw new InternalServerErrorException(`${e}`);
+    }
   }
 
   // 4) PATCH /posts/:id
