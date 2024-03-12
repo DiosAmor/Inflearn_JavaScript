@@ -22,6 +22,7 @@ import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
 import { ImageModel } from './common/entity/image.entity';
 import { ChatsModule } from './chats/chats.module';
 import { ChatsModel } from './chats/entity/chats.entity';
+import { MessagesModel } from './chats/messages/entity/messages.entity';
 
 @Module({
   imports: [
@@ -42,7 +43,7 @@ import { ChatsModel } from './chats/entity/chats.entity';
       username: process.env[ENV_DB_USERNAME_KEY],
       password: process.env[ENV_DB_PASSWORD_KEY],
       database: process.env[ENV_DB_DATABASE_KEY],
-      entities: [PostsModel, UsersModel, ImageModel, ChatsModel],
+      entities: [PostsModel, UsersModel, ImageModel, ChatsModel, MessagesModel],
       synchronize: true,
     }),
     AuthModule,
