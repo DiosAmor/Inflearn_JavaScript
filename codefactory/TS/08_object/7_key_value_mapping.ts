@@ -45,6 +45,7 @@ type OmitUserApiStatus = Omit<GlobalApiStatus, "getPosts">;
 
 /**
  * keyof
+ * 프로퍼티 키를 유니온타입으로 구성.
  */
 type AllKeys = keyof GlobalApiStatus;
 
