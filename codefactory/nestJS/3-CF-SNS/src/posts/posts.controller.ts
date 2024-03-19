@@ -13,7 +13,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -29,6 +28,9 @@ import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
 import { HttpExceptionFilter } from 'src/common/exception-filter/http.exception-filter';
 import { RolesEnum } from 'src/users/const/roles.const';
 import { Roles } from 'src/users/decorator/roles.decorator';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { IsPublicEnum } from 'src/common/const/is-public.const';
+import { IsPostMineOrAdminGuard } from './guard/is-post-mine-or-admin.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -41,6 +43,7 @@ export class PostsController {
   // 1) GET /posts
 
   @Get()
+  @IsPublic(IsPublicEnum.ISPUBLIC)
   @UseInterceptors(LogInterceptor)
   @UseFilters(HttpExceptionFilter)
   getPosts(@Query() query: PaginatePostDto) {
@@ -48,7 +51,6 @@ export class PostsController {
   }
 
   @Post('random')
-  @UseGuards(AccessTokenGuard)
   async postPostRandom(@User() user: UsersModel): Promise<boolean> {
     await this.postsService.generatePosts(user.id);
 
@@ -57,13 +59,13 @@ export class PostsController {
 
   // 2) GET /posts/:id
   @Get(':id')
+  @IsPublic(IsPublicEnum.ISPUBLIC)
   getPost(@Param('id', ParseIntPipe) id: number): Promise<PostsModel> {
     return this.postsService.getPostById(id);
   }
 
   // 3) POST /posts
   @Post()
-  @UseGuards(AccessTokenGuard)
   @UseInterceptors(TransactionInterceptor)
   async postPosts(
     @User('id') authorId: number,
@@ -97,9 +99,10 @@ export class PostsController {
   }
 
   // 4) PATCH /posts/:id
-  @Patch(':id')
+  @Patch(':postId')
+  @UseGuards(IsPostMineOrAdminGuard)
   patchPost(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('postId', ParseIntPipe) id: number,
     @Body() body: UpdatePostDto,
     // @Body('title') title?: string,
     // @Body('content') content?: string,

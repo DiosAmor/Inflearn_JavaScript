@@ -3,7 +3,7 @@ import { CommonService } from 'src/common/common.service';
 import { PaginateCommentsDto } from './dto/paginate-comments.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentsModel } from './entity/comments.entity';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { CreateCommentsDto } from './dto/create-comments.dto';
 import { UsersModel } from 'src/users/entity/users.entity';
 import { DEFAULT_COMMENT_FIND_OPTIONS } from './const/default-comment-find-options.const';
@@ -16,6 +16,12 @@ export class CommentsService {
     private readonly commentsRepository: Repository<CommentsModel>,
     private readonly commonsService: CommonService,
   ) {}
+
+  getRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<CommentsModel>(CommentsModel)
+      : this.commentsRepository;
+  }
 
   paginateComments(dto: PaginateCommentsDto, postId: number) {
     return this.commonsService.paginate(
@@ -52,8 +58,11 @@ export class CommentsService {
     dto: CreateCommentsDto,
     postId: number,
     author: UsersModel,
+    qr?: QueryRunner,
   ) {
-    return this.commentsRepository.save({
+    const repository = this.getRepository(qr);
+
+    return repository.save({
       ...dto,
       post: {
         id: postId,
@@ -93,5 +102,19 @@ export class CommentsService {
     await this.commentsRepository.delete(id);
 
     return id;
+  }
+
+  async isCommentMine(userId: number, commentId: number) {
+    return this.commentsRepository.exist({
+      where: {
+        id: commentId,
+        author: {
+          id: userId,
+        },
+      },
+      relations: {
+        author: true,
+      },
+    });
   }
 }
