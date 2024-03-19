@@ -31,6 +31,12 @@ export class PostsService {
     private readonly configService: ConfigService,
   ) {}
 
+  getRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<PostsModel>(PostsModel)
+      : this.postsRepository;
+  }
+
   async getAllPosts() {
     return this.postsRepository.find({
       ...DEFAULT_POST_FIND_OPTIONS,
@@ -154,12 +160,6 @@ export class PostsService {
     return post;
   }
 
-  getRepository(qr?: QueryRunner) {
-    return qr
-      ? qr.manager.getRepository<PostsModel>(PostsModel)
-      : this.postsRepository;
-  }
-
   async createPost(authorId: number, postDto: CreatePostDto, qr?: QueryRunner) {
     const repository = this.getRepository(qr);
 
@@ -240,5 +240,29 @@ export class PostsService {
         author: true,
       },
     });
+  }
+
+  async incrementCommentCount(postId: number, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
+
+    await repository.increment(
+      {
+        id: postId,
+      },
+      'commentCount',
+      1,
+    );
+  }
+
+  async decrementCommentCount(postId: number, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
+
+    await repository.decrement(
+      {
+        id: postId,
+      },
+      'commentCount',
+      1,
+    );
   }
 }

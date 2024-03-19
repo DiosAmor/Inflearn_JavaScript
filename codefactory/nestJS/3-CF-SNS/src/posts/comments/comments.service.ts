@@ -90,8 +90,10 @@ export class CommentsService {
     return newComment;
   }
 
-  async deleteComment(id: number) {
-    const comment = await this.commentsRepository.findOne({
+  async deleteComment(id: number, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
+
+    const comment = await repository.findOne({
       where: { id },
     });
 
@@ -99,7 +101,7 @@ export class CommentsService {
       throw new BadRequestException('존재하지 않는 댓글입니다.');
     }
 
-    await this.commentsRepository.delete(id);
+    await repository.delete(id);
 
     return id;
   }
