@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    // JS 버전
+    "target": "ESNext",
+    // module 연결하는 방식
+    "module": "ESNext",
+    // JS 나오는 폴더
+    "outDir": "dist",
+    // 검사 엄격하게
+    "strict": true,
+    // JS는 기본적으로 전역 모듈
+    "moduleDetection": "force"
+  },
+  "include": ["src"]
+}
